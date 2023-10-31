@@ -1,59 +1,25 @@
-import { useEffect, useState } from "react";
-import Sismo from "../componentes/Sismo";
+import { Link } from "react-router-dom";
+import locationImage from "../assets/location.png";
 
 function Index() {
-  const [sismos, setSismos] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch("http://localhost:3001/scrape");
-        if (!response.ok) {
-          throw new Error("Network response was not ok " + response.statusText);
-        }
-        const data = await response.json();
-        setSismos(data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const style = {
+    backgroundImage: `url(${locationImage})`,
+    backgroundSize: "700px 500px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center center",
+    height: "90vh",
+  };
 
   return (
-    <>
-      <h1 className="font-black text-4xl text-purple-500 table-auto">Sismos</h1>
-      <p className="mt-3">Mirá todos los sismos del mundo</p>
-      {loading ? (
-        <p className="text-center mt-10">Cargando datos...</p>
-      ) : sismos.length ? (
-        <table className="w-full shadow mt-5 table-auto">
-          <thead className="text-black">
-            <tr>
-              <th className="p-2">Fecha</th>
-              <th className="p-2">Hora</th>
-              <th className="p-2">Profundidad</th>
-              <th className="p-2">Magnitud</th>
-              <th className="p-2">Latitud</th>
-              <th className="p-2">Longitud</th>
-              <th className="p-2">Lugar</th>
-              <th className="p-2">Mapa</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sismos.map((sismo, index) => (
-              <Sismo sismo={sismo} key={index} />
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-center mt-10">No hay sismos registrados</p>
-      )}
-    </>
+    <div style={style}>
+      <h1 className="font-black text-4xl text-slate-700 table-auto">
+        SismoApp
+      </h1>
+      <p className="mt-3">Podes revisar todos los sismos que han ocurrido.</p>
+      <Link to="/sismos" className="btn btn-primary">
+        Ver Sismos
+      </Link>
+    </div>
   );
 }
 
