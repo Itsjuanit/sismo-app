@@ -41,7 +41,7 @@ function SismoTable() {
       <p className="mt-3">Podes revisar todos los sismos que han ocurrido.</p>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <div className="text-center mt-10" role="status">
+          <div className="text-center mt-2" role="status">
             <svg
               aria-hidden="true"
               className="w-16 h-16 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
