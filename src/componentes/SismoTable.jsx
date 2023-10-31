@@ -36,9 +36,9 @@ function SismoTable() {
       {loading ? (
         <p className="text-center mt-10">Cargando datos...</p>
       ) : sismos.length ? (
-        <div className="overflow-x-auto">
+        <div className="sm:overflow-x-visible" style={{ overflowX: "auto" }}>
           <table className="min-w-full shadow mt-5 table-auto">
-            <thead className="text-black">
+            <thead className="text-white bg-slate-700 ">
               <tr>
                 <th className="p-2">Fecha</th>
                 <th className="p-2">Hora</th>
