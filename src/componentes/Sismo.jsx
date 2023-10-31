@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Importa los estilos de Leaflet
+import { GrFormClose } from "react-icons/gr";
 
 function Sismo({ sismo }) {
   const { date, time, depth, magnitude, latitude, longitude, location, link } =
@@ -49,7 +50,14 @@ function Sismo({ sismo }) {
             ></div>
 
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg z-20">
-              <button onClick={handleCloseModal}>Cerrar</button>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleCloseModal}
+                  className="text-slate-700 font-bold"
+                >
+                  <GrFormClose />
+                </button>
+              </div>
               <MapContainer
                 center={[latitude, longitude]}
                 zoom={7}
