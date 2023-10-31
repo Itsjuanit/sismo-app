@@ -56,7 +56,13 @@ function Sismo({ sismo }) {
               onClick={handleCloseModal}
             ></div>
 
-            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg z-20 max-w-full w-full md:w-auto md:max-w-md lg:max-w-lg">
+            <div
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg z-20"
+              style={{
+                width: window.innerWidth < 768 ? "90%" : "600px",
+                height: window.innerWidth < 768 ? "80%" : "400px",
+              }}
+            >
               <div className="flex justify-end">
                 <button
                   onClick={handleIconRotation}
@@ -70,8 +76,7 @@ function Sismo({ sismo }) {
               <MapContainer
                 center={[latitude, longitude]}
                 zoom={7}
-                style={{ height: "80vh", width: "100%" }}
-                className="max-h-[400px] md:max-h-[600px]"
+                style={{ height: "100%", width: "100%" }}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
