@@ -18,9 +18,27 @@ function Sismo({ sismo }) {
   };
 
   const handleIconRotation = () => {
-    setIsRotated(!isRotated); // Cambia el valor de isRotated al opuesto de su valor actual
-    handleCloseModal(); // Llama a la función handleCloseModal
+    setIsRotated(!isRotated);
+    handleCloseModal();
   };
+
+  function getColorForMagnitude(magnitude) {
+    const colors = [
+      "#00ff00", // verde para < 2.0
+      "#40ff00", // transición a amarillo-verde
+      "#80ff00",
+      "#bfff00",
+      "#ffff00", // amarillo para 5.0
+      "#ffbf00",
+      "#ff8000",
+      "#ff4000",
+      "#ff0000", // rojo para 9.0-9.9
+      "#ff0000", // rojo más oscuro para 10+
+    ];
+
+    let index = Math.min(Math.floor(magnitude), 10);
+    return colors[index] || colors[9];
+  }
 
   return (
     <tr className="border-b text-center align-middle">
@@ -33,7 +51,10 @@ function Sismo({ sismo }) {
       <td className="p-6 border">
         <p className="text-gray-800">{depth}</p>
       </td>
-      <td className="p-6 border">
+      <td
+        className="p-6 border"
+        style={{ backgroundColor: getColorForMagnitude(magnitude) }}
+      >
         <p className="text-gray-800">{magnitude}</p>
       </td>
       <td className="p-6 border">
