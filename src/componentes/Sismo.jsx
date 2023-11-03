@@ -54,6 +54,7 @@ function Sismo({ sismo }) {
       <td
         className="p-6 border"
         style={{ backgroundColor: getColorForMagnitude(magnitude) }}
+        title={`Sismo de ${magnitude} en la escala de Richter`}
       >
         <p className="text-gray-800">{magnitude}</p>
       </td>
