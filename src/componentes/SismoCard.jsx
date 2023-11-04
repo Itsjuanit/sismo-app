@@ -2,7 +2,6 @@ import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { GrFormClose } from "react-icons/gr";
-import cardFondo from "../assets/cardFondo.png";
 import catamarca from "../assets/catamarca.png";
 import chile from "../assets/chile.png";
 import ciudad from "../assets/ciudad.png";
