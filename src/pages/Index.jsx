@@ -3,8 +3,8 @@ import locationImage from "../assets/fondoPrincipal.png";
 
 function Index() {
   return (
-    <div className="flex h-[90vh]">
-      <div className="flex-1 p-6">
+    <div className="flex h-[90vh] justify-center items-center md:justify-start">
+      <div className="flex-1 p-6 text-center md:text-left md:w-auto">
         <h1 className="font-black text-4xl text-[#3f4235]">
           ¿Que es SISMOTRACK?
         </h1>
