@@ -1,10 +1,13 @@
+// SismoTable.js
 import { useEffect, useState, useRef } from "react";
-import Sismo from "./Sismo";
+import SismoCard from "./SismoCard";
+import SismoAlert from "./SismoAlert";
 
 function SismoTable() {
   const [sismos, setSismos] = useState([]);
   const [loading, setLoading] = useState(true);
   const intervalRef = useRef(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   async function fetchData() {
     try {
@@ -16,11 +19,24 @@ function SismoTable() {
 
       if (data.data.length > 0) {
         setSismos(data.data);
+        checkRecentSismo(data.data);
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data: ", error);
       setLoading(false);
+    }
+  }
+
+  function checkRecentSismo(sismosData) {
+    const now = Date.now();
+    const tenMinutesAgo = now - 10 * 60 * 1000;
+    const mostRecentSismoTime = new Date(sismosData[0].time).getTime(); // Asumiendo que los sismos están ordenados por hora, de lo contrario, podrías usar sismosData.sort(...) para ordenarlos.
+
+    if (mostRecentSismoTime >= tenMinutesAgo) {
+      setShowAlert(true);
+    } else {
+      setShowAlert(false);
     }
   }
 
@@ -38,6 +54,9 @@ function SismoTable() {
       <h1 className="font-black text-4xl text-slate-700 table-auto">
         SismoApp
       </h1>
+      <div className="fixed bottom-0 right-0 m-6 w-3/4 md:w-1/4">
+        <SismoAlert sismos={sismos} />
+      </div>
       <p className="mt-3">Podes revisar todos los sismos que han ocurrido.</p>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
@@ -62,26 +81,10 @@ function SismoTable() {
           </div>
         </div>
       ) : sismos.length ? (
-        <div className="sm:overflow-x-visible" style={{ overflowX: "auto" }}>
-          <table className="min-w-full shadow mt-5 table-auto">
-            <thead className="text-white bg-slate-700 ">
-              <tr>
-                <th className="p-2">Fecha</th>
-                <th className="p-2">Hora</th>
-                <th className="p-2">Profundidad</th>
-                <th className="p-2">Magnitud</th>
-                <th className="p-2">Latitud</th>
-                <th className="p-2">Longitud</th>
-                <th className="p-2">Lugar</th>
-                <th className="p-2">Mapa</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sismos.map((sismo, index) => (
-                <Sismo sismo={sismo} key={index} />
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5">
+          {sismos.map((sismo, index) => (
+            <SismoCard sismo={sismo} key={index} />
+          ))}
         </div>
       ) : (
         <p className="text-center mt-10">No hay sismos registrados</p>
