@@ -1,47 +1,41 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const contextClass = {
+  error: "bg-orange-100",
+};
 
 function SismoAlert({ sismos }) {
-  const [recentSismo, setRecentSismo] = useState(false);
-
   useEffect(() => {
     const now = Date.now();
     const tenMinutesAgo = now - 10 * 60 * 1000;
 
     const sismoRecent = sismos.some((sismo) => {
-      // Asumiendo que la hora del sismo viene en un formato que Date puede entender
       const sismoTime = new Date(sismo.time).getTime();
       return sismoTime >= tenMinutesAgo;
     });
 
-    setRecentSismo(sismoRecent);
-  }, [sismos]); // Dependencia en la prop sismos, así se re-evaluará cada vez que sismos cambie
-
-  useEffect(() => {
-    let timer;
-    if (recentSismo) {
-      timer = setTimeout(() => {
-        setRecentSismo(false);
-      }, 30000); // 30 segundos
+    if (sismoRecent) {
+      toast.error("Hubo un sismo hace menos de 10 minutos.", {
+        position: "top-right",
+        autoClose: 180000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
-
-    // Limpieza: cancelar el temporizador si el componente se desmonta o si recentSismo cambia antes de que el temporizador se agote
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [recentSismo]);
+  }, [sismos]);
 
   return (
-    <div>
-      {recentSismo && (
-        <div
-          className="p-4 mb-4 text-sm text-white rounded-lg bg-red-500 shadow-lg"
-          role="alert"
-        >
-          <span className="font-medium">Alerta de sismo</span>: Hubo un sismo
-          hace menos de 10 minutos.
-        </div>
-      )}
-    </div>
+    <ToastContainer
+      toastClassName={({ type }) =>
+        contextClass[type || "default"] +
+        " relative flex p-1 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer text-[#3f4235]"
+      }
+    />
   );
 }
 
