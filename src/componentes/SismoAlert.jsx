@@ -37,7 +37,7 @@ function SismoAlert({ sismos }) {
           className="p-4 mb-4 text-sm text-white rounded-lg bg-red-500 shadow-lg"
           role="alert"
         >
-          <span className="font-medium">Alerta de sismo</span> Hubo un sismo
+          <span className="font-medium">Alerta de sismo</span>: Hubo un sismo
           hace menos de 10 minutos.
         </div>
       )}

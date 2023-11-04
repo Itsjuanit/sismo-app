@@ -51,8 +51,8 @@ function SismoTable() {
 
   return (
     <>
-      <h1 className="font-black text-4xl text-slate-700 table-auto">
-        SismoApp
+      <h1 className="font-black text-4xl text-[#3f4235] table-auto">
+        SISMOTRACK
       </h1>
       <div className="fixed bottom-0 right-0 m-6 w-3/4 md:w-1/4">
         <SismoAlert sismos={sismos} />

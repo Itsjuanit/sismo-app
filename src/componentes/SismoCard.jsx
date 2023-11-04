@@ -2,12 +2,27 @@ import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { GrFormClose } from "react-icons/gr";
-import carteles from "../assets/carteles.png";
-import point from "../assets/point.png";
-import redFlag from "../assets/redflag.png";
-import sos from "../assets/sos.png";
+import cardFondo from "../assets/cardFondo.png";
+import catamarca from "../assets/catamarca.png";
+import chile from "../assets/chile.png";
+import ciudad from "../assets/ciudad.png";
+import laRioja from "../assets/laRioja.png";
+import mendoza from "../assets/mendoza.png";
+import salta from "../assets/salta.png";
+import sanJuan from "../assets/sanJuan.png";
+import sanLuis from "../assets/sanLuis.png";
 
-const images = [carteles, sos, point, redFlag];
+const locationBackgroundImages = {
+  MENDOZA: mendoza,
+  "SAN JUAN": sanJuan,
+  "SAN LUIS": sanLuis,
+  SALTA: salta,
+  CHILE: chile,
+  CATAMARCA: catamarca,
+  "LA RIOJA": laRioja,
+  CIUDAD: ciudad,
+};
+
 function SismoCard({ sismo }) {
   const { date, time, depth, magnitude, latitude, longitude, location, link } =
     sismo;
@@ -27,52 +42,51 @@ function SismoCard({ sismo }) {
     handleCloseModal();
   };
 
-  function getColorForMagnitude(magnitude) {
-    const colors = [
-      "#00ff00",
-      "#40ff00",
-      "#80ff00",
-      "#bfff00",
-      "#ffff00",
-      "#ffbf00",
-      "#ff8000",
-      "#ff4000",
-      "#ff0000",
-      "#ff0000",
-    ];
-    let index = Math.min(Math.floor(magnitude), 10);
-    return colors[index] || colors[9];
+  function getTailwindClassForMagnitude(magnitude) {
+    if (magnitude < 1) return "bg-blue-200 text-blue-800";
+    if (magnitude < 2) return "bg-green-200 text-green-800";
+    if (magnitude < 3) return "bg-yellow-200 text-yellow-800";
+    if (magnitude < 4) return "bg-orange-200 text-orange-800";
+    return "bg-red-100 text-red-800";
   }
 
-  function getRandomImage() {
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
-  }
-  const randomImage = getRandomImage();
+  const backgroundImageUrl =
+    locationBackgroundImages[location.toUpperCase()] || ciudad;
 
   return (
     <div className="w-full max-w-sm bg-#fff border border-gray-200 rounded-lg shadow">
-      <img
-        src={randomImage}
-        alt="Sismo"
-        className="w-full object-contain h-48 rounded-t-lg"
-      />
-
-      <div className="px-5 pb-5">
-        <h5 className="text-xl font-semibold tracking-tight text-gray-900 uppercase">
+      <div
+        style={{
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "30%",
+          filter: "saturate(50%) brightness(90%)",
+        }}
+        className="w-full rounded-t-lg p-5"
+      >
+        <h5 className="text-2xl font-bold tracking-tight text-gray-900 uppercase">
           Sismo en {location}
         </h5>
         <div className="flex items-center mt-2.5 mb-5">
           <p>
-            <span className="text-gray-900">Fecha: {date}</span>
+            <span className="text-gray-900 text-l font-bold">
+              Fecha: {date}
+            </span>
           </p>
         </div>
+      </div>
+      <div className="px-5 pb-5">
         <div>
           <p>Hora: {time}</p>
           <p>Profundidad: {depth}</p>
           <p>
             Magnitud:{" "}
-            <span style={{ backgroundColor: getColorForMagnitude(magnitude) }}>
+            <span
+              className={`text-sm font-medium mr-2 px-2.5 py-0.5 rounded ${getTailwindClassForMagnitude(
+                magnitude
+              )}`}
+            >
               {magnitude}
             </span>
           </p>
@@ -81,8 +95,8 @@ function SismoCard({ sismo }) {
         </div>
         <div className="flex items-center justify-between mt-5">
           <button
+            className="rounded text-white bg-[#3f4235] p-2"
             onClick={handleOpenModal}
-            className="text-blue-600 hover:underline"
           >
             Ver Mapa
           </button>
