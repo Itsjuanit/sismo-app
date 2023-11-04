@@ -94,7 +94,7 @@ function SismoCard({ sismo }) {
         </div>
         <div className="flex items-center justify-between mt-5">
           <button
-            className="rounded text-white bg-[#3f4235] p-3"
+            className="rounded text-white bg-[#3f4235] p-2"
             onClick={handleOpenModal}
           >
             Ver Mapa
