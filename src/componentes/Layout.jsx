@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import Footer from "./Footer";
+import Footer from "../pages/Footer";
 import navImage from "../assets/MUNDO.png";
 
 function Layout() {

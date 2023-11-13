@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import SismoCard from "./SismoCard";
-import SismoAlert from "./SismoAlert";
-import SearchBar from "./SearchBar";
+import SismoCard from "../componentes/SismoCard";
+import SismoAlert from "../componentes/SismoAlert";
+import SearchBar from "../componentes/SearchBar";
 
-function SismoTable() {
+function Sismo() {
   const [sismos, setSismos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
@@ -108,4 +108,4 @@ function SismoTable() {
   );
 }
 
-export default SismoTable;
+export default Sismo;
