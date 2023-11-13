@@ -1,13 +1,15 @@
-// SismoTable.js
 import { useEffect, useState, useRef } from "react";
 import SismoCard from "./SismoCard";
 import SismoAlert from "./SismoAlert";
+import SearchBar from "./SearchBar";
 
 function SismoTable() {
   const [sismos, setSismos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const intervalRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState(null);
+  const intervalRef = useRef(null);
 
   async function fetchData() {
     try {
@@ -16,14 +18,15 @@ function SismoTable() {
         throw new Error("Network response was not ok " + response.statusText);
       }
       const data = await response.json();
-
       if (data.data.length > 0) {
         setSismos(data.data);
         checkRecentSismo(data.data);
       }
+      setError(null);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data: ", error);
+      setError(error.message);
       setLoading(false);
     }
   }
@@ -31,8 +34,7 @@ function SismoTable() {
   function checkRecentSismo(sismosData) {
     const now = Date.now();
     const tenMinutesAgo = now - 10 * 60 * 1000;
-    const mostRecentSismoTime = new Date(sismosData[0].time).getTime(); // Asumiendo que los sismos están ordenados por hora, de lo contrario, podrías usar sismosData.sort(...) para ordenarlos.
-
+    const mostRecentSismoTime = new Date(sismosData[0].time).getTime();
     if (mostRecentSismoTime >= tenMinutesAgo) {
       setShowAlert(true);
     } else {
@@ -40,15 +42,19 @@ function SismoTable() {
     }
   }
 
+  function filterSismos(sismos, term) {
+    return sismos.filter((sismo) =>
+      sismo.location.toLowerCase().includes(term.toLowerCase())
+    );
+  }
+
   useEffect(() => {
     fetchData();
     intervalRef.current = setInterval(fetchData, 10 * 60 * 1000);
-
-    return () => {
-      clearInterval(intervalRef.current);
-    };
+    return () => clearInterval(intervalRef.current);
   }, []);
 
+  const displaySismos = searchTerm ? filterSismos(sismos, searchTerm) : sismos;
   return (
     <>
       <h1 className="font-black text-4xl text-[#3f4235] table-auto">
@@ -58,6 +64,8 @@ function SismoTable() {
         <SismoAlert sismos={sismos} />
       </div>
       <p className="mt-3">Podes revisar todos los sismos que han ocurrido.</p>
+      <SearchBar onSearchChange={setSearchTerm} />
+
       {loading ? (
         <div className="flex justify-center items-center h-screen">
           <div className="text-center mt-2" role="status">
@@ -80,14 +88,21 @@ function SismoTable() {
             <span className="sr-only">Cargando...</span>
           </div>
         </div>
-      ) : sismos.length ? (
+      ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5">
-          {sismos.map((sismo, index) => (
+          {displaySismos.map((sismo, index) => (
             <SismoCard sismo={sismo} key={index} />
           ))}
         </div>
-      ) : (
+      )}
+
+      {!loading && !sismos.length && (
         <p className="text-center mt-10">No hay sismos registrados</p>
+      )}
+      {!loading && searchTerm && !displaySismos.length && (
+        <p className="text-center mt-10">
+          No se encontraron sismos para la búsqueda
+        </p>
       )}
     </>
   );
