@@ -1,13 +1,25 @@
 import { useRouteError } from "react-router-dom";
-export default function ErrorPage() {
+
+function ErrorPage() {
   const error = useRouteError();
+
   return (
-    <div className="space-y-8">
-      <h1 className="text-center text-6xl font-extrabold mt-20 text-purple-500">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-6xl font-extrabold text-purple-500 mb-8">
         SISMOTRACK
       </h1>
-      <p className="text-center">Hubo un error</p>
-      <p className="text-center">{error.statusText || error.message}</p>
+      <div className="text-center">
+        <p className="text-lg font-semibold mb-2">Hubo un error.</p>
+        {error && (
+          <p className="text-red-500">
+            {error.statusText ||
+              error.message ||
+              "Ha ocurrido un error inesperado."}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
+
+export default ErrorPage;

@@ -32,14 +32,14 @@ function Sismo() {
   }
 
   function checkRecentSismo(sismosData) {
+    if (sismosData.length === 0) {
+      setShowAlert(false);
+      return;
+    }
+    const [mostRecentSismo] = sismosData;
     const now = Date.now();
     const tenMinutesAgo = now - 10 * 60 * 1000;
-    const mostRecentSismoTime = new Date(sismosData[0].time).getTime();
-    if (mostRecentSismoTime >= tenMinutesAgo) {
-      setShowAlert(true);
-    } else {
-      setShowAlert(false);
-    }
+    setShowAlert(new Date(mostRecentSismo.time).getTime() >= tenMinutesAgo);
   }
 
   function filterSismos(sismos, term) {
@@ -72,7 +72,7 @@ function Sismo() {
           <div className="text-center mt-2" role="status">
             <svg
               aria-hidden="true"
-              className="w-16 h-16 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+              className="w-16 h-16 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-[#3F4235]"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +86,7 @@ function Sismo() {
                 fill="currentFill"
               />
             </svg>
+
             <span className="sr-only">Cargando...</span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { GrFormClose } from "react-icons/gr";
@@ -26,34 +26,17 @@ function SismoCard({ sismo }) {
   const { date, time, depth, magnitude, latitude, longitude, location, link } =
     sismo;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRotated, setIsRotated] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const backgroundImageUrl = useMemo(() => {
+    return locationBackgroundImages[location.toUpperCase()] || ciudad;
+  }, [location]);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleIconRotation = () => {
-    setIsRotated(!isRotated);
-    handleCloseModal();
-  };
-
-  function getTailwindClassForMagnitude(magnitude) {
-    if (magnitude < 1) return "bg-blue-200 text-blue-800";
-    if (magnitude < 2) return "bg-green-200 text-green-800";
-    if (magnitude < 3) return "bg-yellow-200 text-yellow-800";
-    if (magnitude < 4) return "bg-orange-200 text-orange-800";
-    return "bg-red-100 text-red-800";
-  }
-
-  const backgroundImageUrl =
-    locationBackgroundImages[location.toUpperCase()] || ciudad;
 
   return (
-    <div className="w-full max-w-sm bg-#fff border border-gray-200 rounded-lg shadow">
+    <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow">
       <div
         style={{
           backgroundImage: `url(${backgroundImageUrl})`,
@@ -82,9 +65,17 @@ function SismoCard({ sismo }) {
           <p>
             Magnitud:{" "}
             <span
-              className={`text-sm font-medium mr-2 px-2.5 py-0.5 rounded ${getTailwindClassForMagnitude(
-                magnitude
-              )}`}
+              className={`text-sm font-medium mr-2 px-2.5 py-0.5 rounded ${
+                magnitude < 1
+                  ? "bg-blue-200 text-blue-800"
+                  : magnitude < 2
+                  ? "bg-green-200 text-green-800"
+                  : magnitude < 3
+                  ? "bg-yellow-200 text-yellow-800"
+                  : magnitude < 4
+                  ? "bg-orange-200 text-orange-800"
+                  : "bg-red-100 text-red-800"
+              }`}
             >
               {magnitude}
             </span>
@@ -95,7 +86,7 @@ function SismoCard({ sismo }) {
         <div className="flex items-center justify-between mt-5">
           <button
             className="rounded text-white bg-[#3f4235] p-2"
-            onClick={handleOpenModal}
+            onClick={toggleModal}
           >
             Ver Mapa
           </button>
@@ -105,23 +96,23 @@ function SismoCard({ sismo }) {
         <>
           <div
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"
-            onClick={handleCloseModal}
+            onClick={toggleModal}
           ></div>
           <div
             className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg z-20"
             style={{
-              width: window.innerWidth < 768 ? "90%" : "600px",
-              height: window.innerWidth < 768 ? "80%" : "400px",
+              width: "90%",
+              maxWidth: "600px",
+              height: "80%",
+              maxHeight: "400px",
             }}
           >
             <div className="flex justify-end">
               <button
-                onClick={handleIconRotation}
+                onClick={toggleModal}
                 className="text-slate-700 font-bold text-xl"
               >
-                <GrFormClose
-                  className={isRotated ? "transform rotate-180" : ""}
-                />
+                <GrFormClose />
               </button>
             </div>
             <MapContainer
