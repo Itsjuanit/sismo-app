@@ -60,6 +60,15 @@ function Layout() {
               SISMOS
             </Link>
           </li>
+          <li>
+            <Link
+              onClick={handleLinkClick}
+              className="text-white p-2 rounded hover:bg-[#3f4235] block text-center"
+              to="/reporte"
+            >
+              REPORTE
+            </Link>
+          </li>
         </ul>
       </nav>
 

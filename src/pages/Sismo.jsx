@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import SismoCard from "../componentes/SismoCard";
-import SismoAlert from "../componentes/SismoAlert";
-import SearchBar from "../componentes/SearchBar";
+import SismoCard from "../components/SismoCard";
+import SismoAlert from "../components/SismoAlert";
+import SearchBar from "../components/SearchBar";
 
 function Sismo() {
   const [sismos, setSismos] = useState([]);
@@ -55,6 +55,7 @@ function Sismo() {
   }, []);
 
   const displaySismos = searchTerm ? filterSismos(sismos, searchTerm) : sismos;
+  console.log("Sismos:", sismos);
   return (
     <>
       <h1 className="font-black text-4xl text-[#3f4235] table-auto">

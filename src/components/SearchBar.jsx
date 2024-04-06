@@ -1,9 +1,6 @@
-import React from "react";
-
 function SearchBar({ onSearchChange }) {
   const handleSubmit = (e) => {
     e.preventDefault(); // Evita la recarga de la página
-    // Opcionalmente, puedes agregar aquí más lógica si es necesario
   };
 
   return (
