@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import SismoCard from "../components/SismoCard";
 import SismoAlert from "../components/SismoAlert";
 import SearchBar from "../components/SearchBar";
@@ -9,7 +9,6 @@ function Sismo() {
   const [showAlert, setShowAlert] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
-  const intervalRef = useRef(null);
 
   async function fetchData() {
     try {
@@ -25,11 +24,11 @@ function Sismo() {
         localStorage.setItem("sismosTimestamp", Date.now());
       }
       setError(null);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching data: ", error);
       setError(error.message);
-      setLoading(false);
+    } finally {
+      setLoading(false); // Establecer el estado de carga en falso después de completar la solicitud.
     }
   }
 
@@ -44,20 +43,20 @@ function Sismo() {
     setShowAlert(new Date(mostRecentSismo.time).getTime() >= tenMinutesAgo);
   }
 
-  function filterSismos(sismos, term) {
-    return sismos.filter((sismo) =>
-      sismo.location.toLowerCase().includes(term.toLowerCase())
-    );
-  }
+  useEffect(() => {
+    fetchData(); // Llamar a fetchData() al montar el componente
+
+    const fetchDataInterval = setInterval(fetchData, 10 * 60 * 1000); // Llamar a fetchData() cada 10 minutos
+
+    return () => clearInterval(fetchDataInterval); // Limpiar el intervalo al desmontar el componente
+  }, []);
 
   useEffect(() => {
-    // Función para actualizar el localStorage con los nuevos datos
     const updateLocalStorage = () => {
       console.log("Verificando y actualizando el localStorage...");
       const storedData = localStorage.getItem("sismosData");
       if (storedData) {
         console.log("Datos encontrados en el localStorage:", storedData);
-        // Verificar si es un JSON válido
         try {
           const parsedData = JSON.parse(storedData);
           console.log("Es un JSON válido:", parsedData);
@@ -70,14 +69,12 @@ function Sismo() {
             const storedTime = parseInt(storedTimestamp);
             const now = Date.now();
             const twentyFourHours = 24 * 60 * 60 * 1000;
-            // Verificar si han pasado más de 24 horas desde la última actualización
             if (now - storedTime >= twentyFourHours) {
               console.log(
                 "Han pasado más de 24 horas, actualizando los datos..."
               );
               fetchData();
             } else {
-              // No es necesario actualizar el localStorage, utilizar los datos existentes
               console.log(
                 "No han pasado más de 24 horas, utilizando los datos existentes."
               );
@@ -91,21 +88,23 @@ function Sismo() {
         console.log(
           "No se encontraron datos en el localStorage, obteniendo nuevos datos..."
         );
-        // No hay datos en el localStorage, llamar a fetchData() para obtener nuevos datos
         fetchData();
       }
     };
 
-    // Llamar a updateLocalStorage al cargar el componente y cada 24 horas
-    updateLocalStorage();
     const updateLocalStorageInterval = setInterval(
       updateLocalStorage,
       24 * 60 * 60 * 1000
     );
 
-    // Limpiar el intervalo cuando el componente se desmonta
     return () => clearInterval(updateLocalStorageInterval);
   }, []);
+
+  function filterSismos(sismos, term) {
+    return sismos.filter((sismo) =>
+      sismo.location.toLowerCase().includes(term.toLowerCase())
+    );
+  }
 
   const displaySismos = searchTerm ? filterSismos(sismos, searchTerm) : sismos;
 
