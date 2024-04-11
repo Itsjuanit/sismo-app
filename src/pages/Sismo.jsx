@@ -21,6 +21,8 @@ function Sismo() {
       if (data.data.length > 0) {
         setSismos(data.data);
         checkRecentSismo(data.data);
+        localStorage.setItem("sismosData", JSON.stringify(data.data));
+        localStorage.setItem("sismosTimestamp", Date.now());
       }
       setError(null);
       setLoading(false);
@@ -49,13 +51,64 @@ function Sismo() {
   }
 
   useEffect(() => {
-    fetchData();
-    intervalRef.current = setInterval(fetchData, 10 * 60 * 1000);
-    return () => clearInterval(intervalRef.current);
+    // Función para actualizar el localStorage con los nuevos datos
+    const updateLocalStorage = () => {
+      console.log("Verificando y actualizando el localStorage...");
+      const storedData = localStorage.getItem("sismosData");
+      if (storedData) {
+        console.log("Datos encontrados en el localStorage:", storedData);
+        // Verificar si es un JSON válido
+        try {
+          const parsedData = JSON.parse(storedData);
+          console.log("Es un JSON válido:", parsedData);
+          const storedTimestamp = localStorage.getItem("sismosTimestamp");
+          if (storedTimestamp) {
+            console.log(
+              "Marca de tiempo encontrada en el localStorage:",
+              storedTimestamp
+            );
+            const storedTime = parseInt(storedTimestamp);
+            const now = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            // Verificar si han pasado más de 24 horas desde la última actualización
+            if (now - storedTime >= twentyFourHours) {
+              console.log(
+                "Han pasado más de 24 horas, actualizando los datos..."
+              );
+              fetchData();
+            } else {
+              // No es necesario actualizar el localStorage, utilizar los datos existentes
+              console.log(
+                "No han pasado más de 24 horas, utilizando los datos existentes."
+              );
+              setSismos(parsedData);
+            }
+          }
+        } catch (error) {
+          console.error("No es un JSON válido:", error);
+        }
+      } else {
+        console.log(
+          "No se encontraron datos en el localStorage, obteniendo nuevos datos..."
+        );
+        // No hay datos en el localStorage, llamar a fetchData() para obtener nuevos datos
+        fetchData();
+      }
+    };
+
+    // Llamar a updateLocalStorage al cargar el componente y cada 24 horas
+    updateLocalStorage();
+    const updateLocalStorageInterval = setInterval(
+      updateLocalStorage,
+      24 * 60 * 60 * 1000
+    );
+
+    // Limpiar el intervalo cuando el componente se desmonta
+    return () => clearInterval(updateLocalStorageInterval);
   }, []);
 
   const displaySismos = searchTerm ? filterSismos(sismos, searchTerm) : sismos;
-  console.log("Sismos:", sismos);
+
   return (
     <>
       <h1 className="font-black text-4xl text-[#3f4235] table-auto">

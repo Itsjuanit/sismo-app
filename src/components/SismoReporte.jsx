@@ -1,49 +1,86 @@
-import { Scatter } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 
-function SismoReporte({ sismos }) {
-  // Verificar si hay datos de sismos disponibles
-  if (!sismos || sismos.length === 0) {
-    return <p>No hay datos de sismos disponibles.</p>;
-  }
+function SismoReporte() {
+  const [sismos, setSismos] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("San Juan");
 
-  // Convertir los datos de sismos en el formato esperado por Chart.js
-  const data = {
-    datasets: [
-      {
-        label: "Sismos",
-        data: sismos.map((sismo) => ({
-          x: sismo.magnitud,
-          y: sismo.profundidad,
-        })),
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-        borderColor: "rgba(255, 99, 132, 1)",
-        borderWidth: 1,
-      },
-    ],
+  useEffect(() => {
+    const updateSismosFromLocalStorage = () => {
+      const storedData = localStorage.getItem("sismosData");
+      if (storedData) {
+        const sismosData = JSON.parse(storedData);
+        // Ordenar los sismos por fecha de más antigua a más reciente
+        sismosData.sort((a, b) => {
+          const dateA = new Date(a.date + " " + a.time);
+          const dateB = new Date(b.date + " " + b.time);
+          return dateA - dateB;
+        });
+        setSismos(sismosData);
+        // Obtener todas las ciudades únicas de los sismos sin incluir "Todas las Ciudades"
+        const cities = [...new Set(sismosData.map((sismo) => sismo.location))];
+        setCities(cities);
+      }
+    };
+    updateSismosFromLocalStorage();
+  }, []);
+
+  const [cities, setCities] = useState([]);
+
+  const filteredSismos = selectedCity
+    ? sismos.filter((sismo) => sismo.location === selectedCity)
+    : sismos;
+
+  const data = filteredSismos.map((sismo) => ({
+    fecha: new Date(sismo.date + " " + sismo.time).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
+    magnitud: parseFloat(sismo.magnitude),
+    ciudad: sismo.location,
+  }));
+
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
   };
 
-  // Configurar opciones del gráfico
-  const options = {
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Magnitud",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Profundidad (km)",
-        },
-      },
-    },
-  };
-
-  // Renderizar el gráfico de dispersión
   return (
     <div>
-      <Scatter data={data} options={options} />
+      <h1 className="font-black text-4xl text-[#3f4235] table-auto">REPORTE</h1>
+      <h2>Gráfico de Magnitud de Sismos</h2>
+      <label htmlFor="city">Seleccionar Ciudad:</label>
+      <select id="city" onChange={handleCityChange} value={selectedCity}>
+        {cities.map((city) => (
+          <option key={city} value={city}>
+            {city}
+          </option>
+        ))}
+      </select>
+      <LineChart width={800} height={400} data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="fecha" />
+        <YAxis />
+        <Tooltip
+          formatter={(value, name, props) => {
+            if (selectedCity === "San Juan") {
+              return [`Magnitud: ${value}`, `Ciudad: ${props.payload.ciudad}`];
+            } else {
+              return [`Magnitud: ${value}`];
+            }
+          }}
+        />
+        <Legend />
+        <Line type="monotone" dataKey="magnitud" stroke="#3f4235" />
+      </LineChart>
     </div>
   );
 }
